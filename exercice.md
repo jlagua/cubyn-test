@@ -14,6 +14,7 @@ This API could :
 - CRUD: Create, Read one (with this id) or more (list), Update, and Delete parcels.
 - Estimate the price of a parcel (define a route linked with a parcel id) to calculate the price of the parcel.
   - The price formula is based on this kind of grid ;
+  
 | Weight | Express | Classic |
 |--------|---------|---------|
 | < 0,5kg|   10€   |    6€   |

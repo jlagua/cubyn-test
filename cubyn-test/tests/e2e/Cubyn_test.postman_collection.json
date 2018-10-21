@@ -1,0 +1,513 @@
+{
+	"info": {
+		"_postman_id": "0a1f99a7-6044-4582-bb6a-80189eda2575",
+		"name": "Cubyn test",
+		"description": "Api calls and test for parcel REST API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "94520a3c-d38e-4e7a-9f72-e524b8462944",
+						"exec": [
+							"pm.test(\"Response must be valid and have a body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/parcels/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"parcels",
+						""
+					]
+				},
+				"description": "Get list of parcels"
+			},
+			"response": []
+		},
+		{
+			"name": "Create with error",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "78b83f8b-2bd0-49eb-9d78-ad466b4d8727",
+						"exec": [
+							"pm.test(\"Response is error\", function () { ",
+							"    pm.response.to.be.error; ",
+							"});",
+							"",
+							"pm.test(\"Validation error messages are ok\", function () {",
+							"    var text = pm.response.text();",
+							"    pm.expect(text).to.eql('[\"Address is required\",\"Type must be express or classic\",\"Weight must be superior than 0\"]');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\" : \"classique\",\n    \"weight\" : -2,\n    \"volume\" : 10,\n    \"recipient\" : \"Recipient test\",\n    \"city\" : \"City test\",\n    \"zipcode\" : \"01234\"\n}"
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/parcels/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"parcels",
+						""
+					]
+				},
+				"description": "Try to create parcel with invalid body"
+			},
+			"response": []
+		},
+		{
+			"name": "Create new parcel",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5fb37285-5a39-4632-a2d7-8f81ac5db4b4",
+						"exec": [
+							"pm.test(\"Parcel is created\", function () {",
+							"    pm.response.to.have.status(201);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Some values are ok\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.volume).to.eql(10);",
+							"    pm.expect(jsonData.recipient).to.eql(\"Recipient test\");",
+							"    pm.globals.set(\"_id\", jsonData._id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\" : \"classic\",\n    \"weight\" : 2,\n    \"volume\" : 10,\n    \"recipient\" : \"Recipient test\",\n    \"address\" : \"Address test\", \n    \"city\" : \"City test\",\n    \"zipcode\" : \"01234\"\n}"
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/parcels/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"parcels",
+						""
+					]
+				},
+				"description": "Create a new parcel"
+			},
+			"response": []
+		},
+		{
+			"name": "Get parcel detail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1c931e84-de15-4045-a37d-6ec1d00e1036",
+						"exec": [
+							"pm.test(\"Response must be valid and have a body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Response is the correct parcel\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData._id).to.eql(pm.globals.get(\"_id\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/parcels/{{_id}}",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"parcels",
+						"{{_id}}"
+					]
+				},
+				"description": "Get parcel newly created"
+			},
+			"response": []
+		},
+		{
+			"name": "Tryng to get unexistant parcel",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1c931e84-de15-4045-a37d-6ec1d00e1036",
+						"exec": [
+							"pm.test(\"Response is 404\", function () { ",
+							"    pm.response.to.have.status(404); ",
+							"});",
+							"",
+							"pm.test(\"Error messages is ok\", function () {",
+							"    var text = pm.response.text();",
+							"    pm.expect(text).to.eql('No parcel found for id 000000000000000000000000');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/parcels/000000000000000000000000",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"parcels",
+						"000000000000000000000000"
+					]
+				},
+				"description": "Try to get a parcel with bad id"
+			},
+			"response": []
+		},
+		{
+			"name": "Estimate price",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d6059826-feeb-4cd1-b72b-e71a12cc9935",
+						"exec": [
+							"pm.test(\"Price is correct\", function () {",
+							"    var text = pm.response.text();",
+							"    pm.expect(text).to.eql(\"2€\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/parcels/{{_id}}/price/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"parcels",
+						"{{_id}}",
+						"price",
+						""
+					]
+				},
+				"description": "Estimate price of the newly created parcel"
+			},
+			"response": []
+		},
+		{
+			"name": "Update parcel",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "041321c4-2a4f-4bae-bbbe-5dc3672dc34d",
+						"exec": [
+							"pm.test(\"Parcel is updated\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Values are correctly updated\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.type).to.eql(\"express\");",
+							"    pm.expect(jsonData.zipcode).to.eql(\"43210\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "type",
+						"value": "express",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "weight",
+						"value": "1",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "volume",
+						"value": "30",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "recipient",
+						"value": "Mr Recipient",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "city",
+						"value": "City Town",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "address",
+						"value": "1 City street",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "zipcode",
+						"value": "01234",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\" : \"express\",\n    \"weight\": 2,\n    \"volume\": 10,\n    \"recipient\": \"Recipient test\",\n    \"address\": \"Address test\",\n    \"city\": \"City test\",\n    \"zipcode\": \"43210\"\n}"
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/parcels/{{_id}}",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"parcels",
+						"{{_id}}"
+					]
+				},
+				"description": "Update parcel"
+			},
+			"response": []
+		},
+		{
+			"name": "Estimate new price",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d6059826-feeb-4cd1-b72b-e71a12cc9935",
+						"exec": [
+							"pm.test(\"Price is correct\", function () {",
+							"    var text = pm.response.text();",
+							"    pm.expect(text).to.eql(\"8€\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/parcels/{{_id}}/price/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"parcels",
+						"{{_id}}",
+						"price",
+						""
+					]
+				},
+				"description": "Reestimate price after update"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete parcel",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8b617e1a-9665-4941-8c17-a4bc9c8ea8a5",
+						"exec": [
+							"pm.test(\"Parcel is deleted\", function () {",
+							"    pm.response.to.have.status(204);",
+							"    pm.response.to.not.be.withBody;",
+							"    pm.globals.unset(\"_id\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/parcels/{{_id}}",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"parcels",
+						"{{_id}}"
+					]
+				},
+				"description": "Delete parcel"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "46d2db51-a53d-4500-ac3b-f45bf13b36bf",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "6948f043-7d6c-4d24-8d24-d3f2cda838db",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
